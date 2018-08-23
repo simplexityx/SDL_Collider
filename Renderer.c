@@ -20,28 +20,54 @@ void renderer_init(const char *title, int xpos, int ypos, int screenWidth, int s
     }
     r->tree = tree_create(compareInts);
     r->running = 1;
+
+    box_t *b = box_create("box.png", 400, 300, r->renderer, box_update, box_collide);
+    box_t *b2 = box_create("box.png", 400, 100, r->renderer, box_update, box_collide);
+
+    tree_insert(r->tree, b);
+    tree_insert(r->tree, b2);
     return;
 }
 
 
 
-void update(renderer_t *r){
+void update(void *r){
+    renderer_t *re = r;
+    while(re->running != 0){
+        tree_update(re->tree);
+        SDL_Delay(1000/60);
 
+    }
+}
+
+
+void draw(void *r){
+    renderer_t *re = r;
+    while(re->running != 0){
+    SDL_RenderClear(re->renderer);
+    tree_draw(re->tree, re);
+    SDL_RenderPresent(re->renderer);
+    SDL_Delay(1000/60);
+    
+    }
+}
+
+void* eventHandler(void *r){
+    renderer_t *re = r;
+    while(re->running != 0){
+        SDL_PollEvent(&re->event);
+        if (re->event.type == SDL_QUIT) {
+            re->running = 0;
+        }else if(re->event.type == SDL_MOUSEBUTTONDOWN){
+            int x, y;
+            SDL_GetMouseState(&x, &y);
+            box_t *b = box_create("box.png", x, y, re->renderer, box_update, box_collide);
+            tree_insert(re->tree, b);
+            SDL_Delay(1000/60);
+        }
+    }
     
 
-}
-
-
-void draw(renderer_t *r){
-
-}
-
-void eventHandler(renderer_t *r){
-
-    SDL_PollEvent(&r->event);
-    if (r->event.type == SDL_QUIT) {
-		r->running = 0;
-    }
 }
 
 void clean(renderer_t *r){

@@ -1,6 +1,6 @@
 CC = gcc
 
-CFLAGS = -lSDL2_image -lSDL2_image `sdl2-config --cflags --libs`
+CFLAGS = -lSDL2_image -lSDL2_image `sdl2-config --cflags --libs` -pthread
 
 all: collider
 
